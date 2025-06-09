@@ -1,106 +1,135 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ProjectCard } from '@/components/projects/ProjectCard';
 import { 
-  Plus, 
-  Users, 
-  Calendar, 
-  DollarSign, 
-  Target, 
-  TrendingUp,
+  Search, 
+  Filter, 
+  Plus,
   MapPin,
-  Clock,
-  Award,
-  Filter
+  Target,
+  Users,
+  TrendingUp
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { toast } from '@/hooks/use-toast';
 
 const ProjectsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterBiome, setFilterBiome] = useState('');
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
-  const projects = [
+  // Mock data for demo - in production this would come from Supabase
+  const mockProjects = [
     {
-      id: 1,
-      title: 'Amazon Rainforest AI Monitoring',
-      description: 'Deploy AI-powered sensors to monitor deforestation and wildlife patterns in real-time',
-      type: 'ai_conservation',
+      id: '1',
+      title: 'AI-Powered Elephant Tracking in Kenya',
+      description: 'Using computer vision and IoT sensors to monitor elephant populations and prevent human-wildlife conflict in Maasai Mara.',
+      biome_focus: 'Savanna',
       status: 'active',
-      progress: 68,
-      biome: 'Rainforest',
-      teamSize: 12,
-      budget: '$2.5M',
-      timeline: '18 months',
-      impact: '50,000 hectares monitored',
-      technologies: ['IoT Sensors', 'Machine Learning', 'Satellite Imagery'],
-      teamMembers: [
-        { name: 'Dr. Sarah Chen', role: 'Lead AI Researcher', avatar: '/api/placeholder/32/32' },
-        { name: 'Marcus Rodriguez', role: 'Field Coordinator', avatar: '/api/placeholder/32/32' },
-        { name: 'Dr. Priya Patel', role: 'Biologist', avatar: '/api/placeholder/32/32' }
-      ]
+      team_size: 15,
+      funding_goal: 250000,
+      current_funding: 187500,
+      location: 'Kenya, East Africa',
+      duration_months: 18,
+      conservation_focus: ['Wildlife Protection', 'AI Technology', 'Community Engagement'],
+      lead_researcher: {
+        name: 'Dr. Amara Okafor',
+        avatar: '/api/placeholder/40/40'
+      }
     },
     {
-      id: 2,
-      title: 'Coral Reef Restoration Network',
-      description: 'Blockchain-powered coral restoration tracking with community rewards',
-      type: 'biome_restoration',
+      id: '2',
+      title: 'Coral Reef Restoration with Biorock Technology',
+      description: 'Accelerating coral growth using mineral accretion technology and monitoring recovery with underwater drones.',
+      biome_focus: 'Marine',
+      status: 'active',
+      team_size: 8,
+      funding_goal: 180000,
+      current_funding: 95000,
+      location: 'Maldives, Indian Ocean',
+      duration_months: 24,
+      conservation_focus: ['Marine Conservation', 'Climate Action', 'Restoration'],
+      lead_researcher: {
+        name: 'Dr. Marina Rodriguez',
+        avatar: '/api/placeholder/40/40'
+      }
+    },
+    {
+      id: '3',
+      title: 'Amazon Rainforest Digital Twin',
+      description: 'Creating a comprehensive digital model of Amazon ecosystems using satellite data and ground sensors.',
+      biome_focus: 'Tropical Forest',
       status: 'planning',
-      progress: 25,
-      biome: 'Marine',
-      teamSize: 8,
-      budget: '$1.8M',
-      timeline: '24 months',
-      impact: '15 reef sites targeted',
-      technologies: ['Blockchain', 'Underwater Drones', 'Community Platform'],
-      teamMembers: [
-        { name: 'Dr. James Miller', role: 'Marine Biologist', avatar: '/api/placeholder/32/32' },
-        { name: 'Lisa Wang', role: 'Blockchain Developer', avatar: '/api/placeholder/32/32' }
-      ]
-    },
-    {
-      id: 3,
-      title: 'Urban Wildlife Corridors',
-      description: 'Creating connected green spaces for urban wildlife migration',
-      type: 'community_outreach',
-      status: 'completed',
-      progress: 100,
-      biome: 'Urban',
-      teamSize: 15,
-      budget: '$950K',
-      timeline: '12 months',
-      impact: '25 km of corridors created',
-      technologies: ['GIS Mapping', 'Community App', 'Drone Surveys'],
-      teamMembers: [
-        { name: 'Alex Thompson', role: 'Urban Planner', avatar: '/api/placeholder/32/32' },
-        { name: 'Dr. Nina Foster', role: 'Wildlife Ecologist', avatar: '/api/placeholder/32/32' }
-      ]
+      team_size: 22,
+      funding_goal: 500000,
+      current_funding: 125000,
+      location: 'Brazil, South America',
+      duration_months: 36,
+      conservation_focus: ['Forest Conservation', 'Digital Modeling', 'Biodiversity'],
+      lead_researcher: {
+        name: 'Dr. Carlos Silva',
+        avatar: '/api/placeholder/40/40'
+      }
     }
   ];
 
-  const filteredProjects = projects.filter(project => 
-    (activeTab === 'all' || project.type === activeTab) &&
-    (filterStatus === 'all' || project.status === filterStatus)
-  );
+  useEffect(() => {
+    // In production, fetch from Supabase
+    setProjects(mockProjects);
+    setLoading(false);
+  }, []);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-500';
-      case 'planning': return 'bg-yellow-500';
-      case 'completed': return 'bg-blue-500';
-      case 'paused': return 'bg-gray-500';
-      default: return 'bg-gray-500';
+  const filteredProjects = projects.filter(project => {
+    const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesBiome = !filterBiome || project.biome_focus === filterBiome;
+    const matchesTab = activeTab === 'all' || 
+                      (activeTab === 'my-projects' && user) || 
+                      project.status === activeTab;
+    
+    return matchesSearch && matchesBiome && matchesTab;
+  });
+
+  const handleJoinProject = async (projectId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to join projects.",
+        variant: "destructive"
+      });
+      return;
     }
+
+    toast({
+      title: "Project joined!",
+      description: "You've successfully joined this conservation project.",
+    });
   };
 
-  const getTypeLabel = (type: string) => {
-    return type.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+  const handleSupportProject = async (projectId: string) => {
+    toast({
+      title: "Support feature coming soon",
+      description: "Financial support for projects will be available soon.",
+    });
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
@@ -112,193 +141,124 @@ const ProjectsPage: React.FC = () => {
               Conservation Projects
             </h1>
             <p className="text-lg text-muted-foreground mt-2">
-              Collaborative conservation initiatives making real-world impact
+              Join global conservation initiatives and make a real impact
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-            <Button className="w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Project
-            </Button>
-            <Button variant="outline" className="w-full sm:w-auto">
-              <Filter className="w-4 h-4 mr-2" />
-              Filters
-            </Button>
-          </div>
+          <Button>
+            <Plus className="w-4 h-4 mr-2" />
+            Start Project
+          </Button>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Active Projects</p>
-                  <p className="text-2xl font-bold">24</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-green-500" />
-              </div>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
+              <Target className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">127</div>
+              <p className="text-xs text-muted-foreground">Worldwide initiatives</p>
             </CardContent>
           </Card>
+          
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Funding</p>
-                  <p className="text-2xl font-bold">$18.2M</p>
-                </div>
-                <DollarSign className="h-8 w-8 text-blue-500" />
-              </div>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Global Participants</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">5,847</div>
+              <p className="text-xs text-muted-foreground">Conservation heroes</p>
             </CardContent>
           </Card>
+          
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Team Members</p>
-                  <p className="text-2xl font-bold">342</p>
-                </div>
-                <Users className="h-8 w-8 text-purple-500" />
-              </div>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Biomes Covered</CardTitle>
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">23</div>
+              <p className="text-xs text-muted-foreground">Ecosystems protected</p>
             </CardContent>
           </Card>
+          
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Impact Score</p>
-                  <p className="text-2xl font-bold">9.2</p>
-                </div>
-                <Award className="h-8 w-8 text-orange-500" />
-              </div>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Impact Score</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">94.2%</div>
+              <p className="text-xs text-muted-foreground">Success rate</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Project Tabs and Filters */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
-            <TabsList className="grid w-full lg:w-auto grid-cols-2 lg:grid-cols-5">
-              <TabsTrigger value="all">All Projects</TabsTrigger>
-              <TabsTrigger value="ai_conservation">AI Conservation</TabsTrigger>
-              <TabsTrigger value="biome_restoration">Restoration</TabsTrigger>
-              <TabsTrigger value="community_outreach">Community</TabsTrigger>
-              <TabsTrigger value="research">Research</TabsTrigger>
-            </TabsList>
-            
-            <div className="flex space-x-2">
-              <select 
-                value={filterStatus} 
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2 border border-border rounded-md bg-background text-foreground"
-              >
-                <option value="all">All Status</option>
-                <option value="planning">Planning</option>
-                <option value="active">Active</option>
-                <option value="completed">Completed</option>
-                <option value="paused">Paused</option>
-              </select>
-            </div>
+        {/* Search and Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              placeholder="Search projects..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
+          <Select value={filterBiome} onValueChange={setFilterBiome}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Filter by biome" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">All Biomes</SelectItem>
+              <SelectItem value="Marine">Marine</SelectItem>
+              <SelectItem value="Tropical Forest">Tropical Forest</SelectItem>
+              <SelectItem value="Savanna">Savanna</SelectItem>
+              <SelectItem value="Temperate Forest">Temperate Forest</SelectItem>
+              <SelectItem value="Arctic">Arctic</SelectItem>
+              <SelectItem value="Desert">Desert</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline">
+            <Filter className="w-4 h-4 mr-2" />
+            More Filters
+          </Button>
+        </div>
+
+        {/* Project Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="all">All Projects</TabsTrigger>
+            <TabsTrigger value="active">Active</TabsTrigger>
+            <TabsTrigger value="planning">Planning</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
+            <TabsTrigger value="my-projects">My Projects</TabsTrigger>
+          </TabsList>
 
           <TabsContent value={activeTab} className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {filteredProjects.map((project) => (
-                <Card key={project.id} className="hover:shadow-lg transition-all duration-200 cursor-pointer">
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge variant="secondary" className="text-xs">
-                        {getTypeLabel(project.type)}
-                      </Badge>
-                      <Badge className={`${getStatusColor(project.status)} text-white text-xs`}>
-                        {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-xl">{project.title}</CardTitle>
-                    <CardDescription className="line-clamp-2">
-                      {project.description}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    {/* Progress */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Progress</span>
-                        <span>{project.progress}%</span>
-                      </div>
-                      <Progress value={project.progress} className="h-2" />
-                    </div>
-
-                    {/* Project Details */}
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
-                        <span>{project.biome}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Users className="w-4 h-4 text-muted-foreground" />
-                        <span>{project.teamSize} members</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <DollarSign className="w-4 h-4 text-muted-foreground" />
-                        <span>{project.budget}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span>{project.timeline}</span>
-                      </div>
-                    </div>
-
-                    {/* Technologies */}
-                    <div className="flex flex-wrap gap-1">
-                      {project.technologies.slice(0, 3).map((tech, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {tech}
-                        </Badge>
-                      ))}
-                      {project.technologies.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{project.technologies.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Team Members */}
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-muted-foreground">Team:</span>
-                      <div className="flex -space-x-2">
-                        {project.teamMembers.slice(0, 3).map((member, index) => (
-                          <Avatar key={index} className="h-6 w-6 border-2 border-background">
-                            <AvatarImage src={member.avatar} />
-                            <AvatarFallback className="text-xs">
-                              {member.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                        ))}
-                        {project.teamMembers.length > 3 && (
-                          <div className="h-6 w-6 rounded-full bg-muted border-2 border-background flex items-center justify-center">
-                            <span className="text-xs text-muted-foreground">
-                              +{project.teamMembers.length - 3}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Impact */}
-                    <div className="pt-2 border-t border-border">
-                      <div className="flex items-center space-x-2">
-                        <Target className="w-4 h-4 text-green-500" />
-                        <span className="text-sm font-medium text-green-600">
-                          {project.impact}
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  onJoin={handleJoinProject}
+                  onSupport={handleSupportProject}
+                />
               ))}
             </div>
+            
+            {filteredProjects.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No projects found matching your criteria.</p>
+                <Button className="mt-4">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Start a New Project
+                </Button>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>

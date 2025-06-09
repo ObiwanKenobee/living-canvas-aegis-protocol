@@ -2,178 +2,74 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
 import { 
-  BarChart3, 
   TrendingUp, 
-  Globe, 
-  Users, 
-  Leaf, 
-  Shield, 
-  Zap,
-  Target,
-  Award,
-  MapPin,
+  Target, 
+  MapPin, 
+  Users,
   Calendar,
-  Activity,
-  TreePine,
-  Fish,
-  Bird,
-  Mountain,
-  Waves,
-  Sun
+  Award,
+  Leaf,
+  Heart,
+  Globe,
+  BarChart3
 } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 const ImpactPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const [timeFilter, setTimeFilter] = useState('all-time');
 
-  const globalMetrics = [
+  // Mock impact data
+  const conservationMetrics = [
+    { metric: 'Species Protected', value: 1247, unit: 'species', change: '+12%', color: 'text-green-600' },
+    { metric: 'Habitat Restored', value: 52.3, unit: 'km²', change: '+8%', color: 'text-blue-600' },
+    { metric: 'Carbon Sequestered', value: 18.7, unit: 'tons CO2', change: '+15%', color: 'text-purple-600' },
+    { metric: 'Communities Engaged', value: 89, unit: 'communities', change: '+23%', color: 'text-orange-600' }
+  ];
+
+  const timeSeriesData = [
+    { month: 'Jan', species: 1100, habitat: 45, carbon: 15, communities: 72 },
+    { month: 'Feb', species: 1150, habitat: 47, carbon: 16, communities: 75 },
+    { month: 'Mar', species: 1180, habitat: 48, carbon: 17, communities: 78 },
+    { month: 'Apr', species: 1200, habitat: 50, carbon: 17.5, communities: 82 },
+    { month: 'May', species: 1230, habitat: 51, carbon: 18.2, communities: 85 },
+    { month: 'Jun', species: 1247, habitat: 52.3, carbon: 18.7, communities: 89 }
+  ];
+
+  const projectImpacts = [
     {
-      title: 'Hectares Protected',
-      value: '2.3M',
-      change: '+15.2%',
-      icon: Shield,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
-      description: 'Land and marine areas under protection'
+      id: '1',
+      name: 'AI Elephant Tracking Kenya',
+      impact: 'Reduced human-wildlife conflict by 78%',
+      metrics: { species: 45, area: 2.3, communities: 5 },
+      status: 'active'
     },
     {
-      title: 'Species Monitored',
-      value: '12,847',
-      change: '+8.7%',
-      icon: Bird,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
-      description: 'Species actively tracked by our network'
+      id: '2',
+      name: 'Coral Reef Restoration Maldives',
+      impact: 'Increased coral coverage by 34%',
+      metrics: { species: 120, area: 0.8, communities: 3 },
+      status: 'active'
     },
     {
-      title: 'Active Conservationists',
-      value: '89,432',
-      change: '+23.1%',
-      icon: Users,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
-      description: 'Global community members'
-    },
-    {
-      title: 'Carbon Sequestered',
-      value: '1.2M tons',
-      change: '+12.5%',
-      icon: Leaf,
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-100',
-      description: 'CO2 equivalent captured this year'
+      id: '3',
+      name: 'Amazon Digital Twin Brazil',
+      impact: 'Predicted deforestation hotspots with 92% accuracy',
+      metrics: { species: 580, area: 15.2, communities: 12 },
+      status: 'planning'
     }
   ];
 
-  const sdgGoals = [
-    { goal: 'Climate Action', progress: 78, color: 'bg-red-500', target: 'SDG 13' },
-    { goal: 'Life Below Water', progress: 65, color: 'bg-blue-500', target: 'SDG 14' },
-    { goal: 'Life on Land', progress: 82, color: 'bg-green-500', target: 'SDG 15' },
-    { goal: 'Clean Water', progress: 71, color: 'bg-cyan-500', target: 'SDG 6' },
-    { goal: 'Sustainable Cities', progress: 58, color: 'bg-orange-500', target: 'SDG 11' },
-    { goal: 'Partnerships', progress: 89, color: 'bg-purple-500', target: 'SDG 17' }
+  const globalRegions = [
+    { region: 'Africa', projects: 34, species: 445, color: 'bg-green-500' },
+    { region: 'South America', projects: 28, species: 523, color: 'bg-blue-500' },
+    { region: 'Asia', projects: 22, species: 189, color: 'bg-purple-500' },
+    { region: 'North America', projects: 18, species: 67, color: 'bg-orange-500' },
+    { region: 'Europe', projects: 12, species: 23, color: 'bg-pink-500' }
   ];
-
-  const biomeImpact = [
-    {
-      name: 'Tropical Rainforests',
-      icon: TreePine,
-      protected: '890,000 ha',
-      projects: 45,
-      threat_level: 'Critical',
-      color: 'text-green-600',
-      progress: 72
-    },
-    {
-      name: 'Coral Reefs',
-      icon: Fish,
-      protected: '150,000 ha',
-      projects: 28,
-      threat_level: 'High',
-      color: 'text-blue-600',
-      progress: 58
-    },
-    {
-      name: 'Mountain Ecosystems',
-      icon: Mountain,
-      protected: '560,000 ha',
-      projects: 32,
-      threat_level: 'Medium',
-      color: 'text-gray-600',
-      progress: 65
-    },
-    {
-      name: 'Wetlands',
-      icon: Waves,
-      protected: '320,000 ha',
-      projects: 18,
-      threat_level: 'High',
-      color: 'text-cyan-600',
-      progress: 43
-    },
-    {
-      name: 'Grasslands',
-      icon: Sun,
-      protected: '780,000 ha',
-      projects: 25,
-      threat_level: 'Medium',
-      color: 'text-yellow-600',
-      progress: 69
-    }
-  ];
-
-  const recentAchievements = [
-    {
-      title: 'Amazon Monitoring Network Milestone',
-      description: '1,000th AI camera deployed in Amazon rainforest',
-      date: '2024-06-01',
-      impact: '50,000 new hectares monitored',
-      type: 'Technology'
-    },
-    {
-      title: 'Great Barrier Reef Restoration',
-      description: 'Successfully restored 500 hectares of coral reef',
-      date: '2024-05-15',
-      impact: '25 marine species populations recovered',
-      type: 'Restoration'
-    },
-    {
-      title: 'Community Conservation Awards',
-      description: '50 local communities recognized for conservation efforts',
-      date: '2024-05-01',
-      impact: '100,000 people engaged in conservation',
-      type: 'Community'
-    },
-    {
-      title: 'Blockchain Carbon Credits Launch',
-      description: 'Launched transparent carbon credit marketplace',
-      date: '2024-04-20',
-      impact: '$2.5M in verified carbon credits traded',
-      type: 'Innovation'
-    }
-  ];
-
-  const regionMetrics = [
-    { region: 'Asia-Pacific', projects: 156, hectares: '1.2M', species: 4832, funding: '$12.5M' },
-    { region: 'Africa', projects: 89, hectares: '890K', species: 3247, funding: '$8.3M' },
-    { region: 'Americas', projects: 134, hectares: '1.1M', species: 3891, funding: '$15.2M' },
-    { region: 'Europe', projects: 67, hectares: '420K', species: 1876, funding: '$6.8M' },
-    { region: 'Middle East', projects: 23, hectares: '180K', species: 892, funding: '$2.1M' }
-  ];
-
-  const getThreatColor = (level: string) => {
-    switch (level) {
-      case 'Critical': return 'bg-red-500';
-      case 'High': return 'bg-orange-500';
-      case 'Medium': return 'bg-yellow-500';
-      case 'Low': return 'bg-green-500';
-      default: return 'bg-gray-500';
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
@@ -185,281 +81,266 @@ const ImpactPage: React.FC = () => {
               Global Impact Dashboard
             </h1>
             <p className="text-lg text-muted-foreground mt-2">
-              Real-time conservation impact across our global network
+              Track conservation outcomes and measure planetary healing progress
             </p>
           </div>
-          <div className="flex space-x-4">
-            <select 
-              value={timeFilter} 
-              onChange={(e) => setTimeFilter(e.target.value)}
-              className="px-3 py-2 border border-border rounded-md bg-background text-foreground"
-            >
-              <option value="all-time">All Time</option>
-              <option value="this-year">This Year</option>
-              <option value="this-month">This Month</option>
-              <option value="this-week">This Week</option>
-            </select>
-            <Button variant="outline">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Export Report
-            </Button>
-          </div>
+          <Button>
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Generate Report
+          </Button>
         </div>
 
-        {/* Global Metrics Cards */}
+        {/* Key Metrics Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {globalMetrics.map((metric, index) => {
-            const IconComponent = metric.icon;
-            return (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`p-3 rounded-full ${metric.bgColor}`}>
-                      <IconComponent className={`w-6 h-6 ${metric.color}`} />
-                    </div>
-                    <Badge className="bg-green-100 text-green-800 border-green-200">
-                      {metric.change}
-                    </Badge>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold mb-1">{metric.value}</p>
-                    <p className="text-sm font-medium text-foreground mb-1">{metric.title}</p>
-                    <p className="text-xs text-muted-foreground">{metric.description}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+          {conservationMetrics.map((metric, index) => (
+            <Card key={index}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{metric.metric}</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {metric.value}
+                  <span className="text-sm font-normal ml-1 text-muted-foreground">
+                    {metric.unit}
+                  </span>
+                </div>
+                <p className={`text-xs ${metric.color}`}>
+                  {metric.change} from last month
+                </p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {/* Impact Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="biomes">Biomes</TabsTrigger>
-            <TabsTrigger value="sdg">SDG Progress</TabsTrigger>
-            <TabsTrigger value="regional">Regional</TabsTrigger>
-            <TabsTrigger value="achievements">Achievements</TabsTrigger>
+            <TabsTrigger value="projects">Project Impact</TabsTrigger>
+            <TabsTrigger value="regional">Regional Data</TabsTrigger>
+            <TabsTrigger value="trends">Trends</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="mt-6">
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="mt-6 space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Conservation Impact Timeline */}
+              {/* Conservation Progress Chart */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Activity className="w-5 h-5" />
-                    <span>Conservation Impact Timeline</span>
-                  </CardTitle>
-                  <CardDescription>Major milestones and achievements</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {recentAchievements.slice(0, 4).map((achievement, index) => (
-                    <div key={index} className="flex items-start space-x-3 p-3 border border-border rounded-lg">
-                      <div className="flex-shrink-0">
-                        <div className="w-3 h-3 bg-primary rounded-full mt-2"></div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start mb-1">
-                          <h4 className="font-medium text-sm">{achievement.title}</h4>
-                          <Badge variant="outline" className="text-xs">
-                            {achievement.type}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">{achievement.description}</p>
-                        <div className="flex justify-between items-center">
-                          <p className="text-xs font-medium text-primary">{achievement.impact}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(achievement.date).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Real-time Activity */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Zap className="w-5 h-5" />
-                    <span>Real-time Activity</span>
-                  </CardTitle>
-                  <CardDescription>Live conservation activities worldwide</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <Shield className="w-4 h-4 text-green-600" />
-                      <span className="text-sm">New protected area established</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">2 min ago</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <Bird className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm">Wildlife monitoring alert</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">5 min ago</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <Users className="w-4 h-4 text-purple-600" />
-                      <span className="text-sm">Community project launched</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">12 min ago</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <Target className="w-4 h-4 text-orange-600" />
-                      <span className="text-sm">Conservation goal achieved</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">18 min ago</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="biomes" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {biomeImpact.map((biome, index) => {
-                const IconComponent = biome.icon;
-                return (
-                  <Card key={index} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <IconComponent className={`w-6 h-6 ${biome.color}`} />
-                          <CardTitle className="text-lg">{biome.name}</CardTitle>
-                        </div>
-                        <Badge className={`${getThreatColor(biome.threat_level)} text-white text-xs`}>
-                          {biome.threat_level}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-muted-foreground">Protected Area</p>
-                          <p className="font-semibold">{biome.protected}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Active Projects</p>
-                          <p className="font-semibold">{biome.projects}</p>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Conservation Progress</span>
-                          <span>{biome.progress}%</span>
-                        </div>
-                        <Progress value={biome.progress} className="h-2" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="sdg" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Target className="w-5 h-5" />
-                  <span>UN Sustainable Development Goals Progress</span>
-                </CardTitle>
-                <CardDescription>Our contribution to global sustainability targets</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {sdgGoals.map((goal, index) => (
-                    <div key={index} className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h4 className="font-medium">{goal.goal}</h4>
-                          <p className="text-sm text-muted-foreground">{goal.target}</p>
-                        </div>
-                        <span className="text-lg font-bold">{goal.progress}%</span>
-                      </div>
-                      <Progress value={goal.progress} className="h-3" />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="regional" className="mt-6">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Globe className="w-5 h-5" />
-                    <span>Regional Impact Summary</span>
-                  </CardTitle>
-                  <CardDescription>Conservation impact across different world regions</CardDescription>
+                  <CardTitle>Conservation Progress Trends</CardTitle>
+                  <CardDescription>Species protection and habitat restoration over time</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left p-3">Region</th>
-                          <th className="text-left p-3">Projects</th>
-                          <th className="text-left p-3">Hectares Protected</th>
-                          <th className="text-left p-3">Species Monitored</th>
-                          <th className="text-left p-3">Funding</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {regionMetrics.map((region, index) => (
-                          <tr key={index} className="border-b hover:bg-muted/50">
-                            <td className="p-3 font-medium">{region.region}</td>
-                            <td className="p-3">{region.projects}</td>
-                            <td className="p-3">{region.hectares}</td>
-                            <td className="p-3">{region.species}</td>
-                            <td className="p-3 font-medium text-green-600">{region.funding}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={timeSeriesData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="species" stroke="#8884d8" strokeWidth={2} />
+                      <Line type="monotone" dataKey="habitat" stroke="#82ca9d" strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Impact Summary */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Platform Impact Summary</CardTitle>
+                  <CardDescription>Cumulative conservation achievements</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Leaf className="w-5 h-5 text-green-500" />
+                      <span className="font-medium">Ecosystems Monitored</span>
+                    </div>
+                    <span className="text-2xl font-bold">47</span>
                   </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Heart className="w-5 h-5 text-red-500" />
+                      <span className="font-medium">Lives Saved</span>
+                    </div>
+                    <span className="text-2xl font-bold">12,450</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Globe className="w-5 h-5 text-blue-500" />
+                      <span className="font-medium">Countries Active</span>
+                    </div>
+                    <span className="text-2xl font-bold">34</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Award className="w-5 h-5 text-yellow-500" />
+                      <span className="font-medium">UN SDG Contributions</span>
+                    </div>
+                    <span className="text-2xl font-bold">8</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Biodiversity Index</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-600 mb-2">94.2</div>
+                  <Progress value={94.2} className="mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    Overall ecosystem health score
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Conservation Efficiency</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-blue-600 mb-2">87%</div>
+                  <Progress value={87} className="mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    Success rate of protection efforts
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Community Engagement</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-purple-600 mb-2">78%</div>
+                  <Progress value={78} className="mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    Local participation in projects
+                  </p>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          <TabsContent value="achievements" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {recentAchievements.map((achievement, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
+          {/* Project Impact Tab */}
+          <TabsContent value="projects" className="mt-6">
+            <div className="space-y-6">
+              {projectImpacts.map((project) => (
+                <Card key={project.id}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
-                        <CardTitle className="text-lg">{achievement.title}</CardTitle>
-                        <CardDescription>{achievement.description}</CardDescription>
+                        <CardTitle className="text-lg">{project.name}</CardTitle>
+                        <CardDescription className="text-green-600 font-medium">
+                          {project.impact}
+                        </CardDescription>
                       </div>
-                      <Badge variant="outline">{achievement.type}</Badge>
+                      <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
+                        {project.status}
+                      </Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex justify-between items-center">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="flex items-center space-x-2">
-                        <Award className="w-4 h-4 text-orange-500" />
-                        <span className="text-sm font-medium text-primary">{achievement.impact}</span>
+                        <Target className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm">
+                          <strong>{project.metrics.species}</strong> species protected
+                        </span>
                       </div>
-                      <div className="flex items-center space-x-2 text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
-                        <span className="text-sm">{new Date(achievement.date).toLocaleDateString()}</span>
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm">
+                          <strong>{project.metrics.area} km²</strong> area covered
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Users className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm">
+                          <strong>{project.metrics.communities}</strong> communities involved
+                        </span>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
+          </TabsContent>
+
+          {/* Regional Data Tab */}
+          <TabsContent value="regional" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Regional Project Distribution</CardTitle>
+                  <CardDescription>Conservation efforts by geographic region</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={globalRegions}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="region" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="projects" fill="#8884d8" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Regional Impact Summary</CardTitle>
+                  <CardDescription>Species protection by region</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {globalRegions.map((region, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-3 h-3 rounded-full ${region.color}`}></div>
+                        <span className="font-medium">{region.region}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold">{region.species} species</div>
+                        <div className="text-sm text-muted-foreground">{region.projects} projects</div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Trends Tab */}
+          <TabsContent value="trends" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Conservation Metrics Trends</CardTitle>
+                <CardDescription>Track progress across multiple conservation indicators</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={timeSeriesData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="species" stroke="#8884d8" strokeWidth={2} name="Species Protected" />
+                    <Line type="monotone" dataKey="habitat" stroke="#82ca9d" strokeWidth={2} name="Habitat Restored (km²)" />
+                    <Line type="monotone" dataKey="carbon" stroke="#ffc658" strokeWidth={2} name="Carbon Sequestered (tons)" />
+                    <Line type="monotone" dataKey="communities" stroke="#ff7c7c" strokeWidth={2} name="Communities Engaged" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

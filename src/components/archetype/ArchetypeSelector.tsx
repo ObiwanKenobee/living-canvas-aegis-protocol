@@ -1,158 +1,221 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '../auth/AuthProvider';
-import { toast } from 'sonner';
-
-const archetypes = [
-  {
-    id: 'wildlife_memory_artist',
-    name: 'Wildlife Memory Artist',
-    emoji: '🎨',
-    description: 'Encode animal dreams & migrations through artistic expression',
-    skills: ['Digital Art', 'Data Visualization', 'Storytelling', 'Pattern Recognition']
-  },
-  {
-    id: 'biome_intelligence_architect',
-    name: 'Biome Intelligence Architect',
-    emoji: '🧠',
-    description: 'Design AI systems to protect and understand ecosystems',
-    skills: ['Machine Learning', 'Ecosystem Modeling', 'Data Analysis', 'AI Development']
-  },
-  {
-    id: 'rewilding_composer',
-    name: 'Rewilding Composer',
-    emoji: '🌱',
-    description: 'Restore lost ecological symphonies and natural harmonies',
-    skills: ['Acoustic Ecology', 'Sound Design', 'Environmental Science', 'Restoration']
-  },
-  {
-    id: 'indigenous_knowledge_curator',
-    name: 'Indigenous Knowledge Curator',
-    emoji: '🐾',
-    description: 'Honor and preserve ancestral ecological wisdom',
-    skills: ['Cultural Preservation', 'Traditional Knowledge', 'Community Engagement', 'Ethnobotany']
-  },
-  {
-    id: 'data_scientist',
-    name: 'Conservation Data Scientist',
-    emoji: '📊',
-    description: 'Analyze patterns in nature through advanced data science',
-    skills: ['Data Analysis', 'Statistics', 'Programming', 'Research Methods']
-  },
-  {
-    id: 'tech_innovator',
-    name: 'Conservation Tech Innovator',
-    emoji: '💡',
-    description: 'Build breakthrough technologies for wildlife protection',
-    skills: ['Software Development', 'Hardware Design', 'Innovation', 'Prototyping']
-  }
-];
+import { toast } from '@/hooks/use-toast';
 
 interface ArchetypeSelectorProps {
   onComplete: () => void;
 }
 
+const archetypes = [
+  {
+    id: 'wildlife_memory_artist',
+    name: 'Wildlife Memory Artist',
+    description: 'Create visual narratives and artistic interpretations of conservation data',
+    icon: '🎨',
+    focus: 'Creative storytelling through conservation art'
+  },
+  {
+    id: 'biome_intelligence_architect',
+    name: 'Biome Intelligence Architect',
+    description: 'Design AI systems for ecosystem monitoring and analysis',
+    icon: '🧠',
+    focus: 'AI-powered environmental intelligence'
+  },
+  {
+    id: 'rewilding_composer',
+    name: 'Rewilding Composer',
+    description: 'Orchestrate large-scale habitat restoration projects',
+    icon: '🌱',
+    focus: 'Ecosystem restoration and biodiversity enhancement'
+  },
+  {
+    id: 'indigenous_knowledge_curator',
+    name: 'Indigenous Knowledge Curator',
+    description: 'Bridge traditional wisdom with modern conservation science',
+    icon: '🐾',
+    focus: 'Cultural and traditional ecological knowledge'
+  },
+  {
+    id: 'data_scientist',
+    name: 'Conservation Data Scientist',
+    description: 'Analyze complex environmental datasets for insights',
+    icon: '📊',
+    focus: 'Data-driven conservation strategies'
+  },
+  {
+    id: 'tech_innovator',
+    name: 'Conservation Tech Innovator',
+    description: 'Develop cutting-edge technology solutions for wildlife protection',
+    icon: '💡',
+    focus: 'Technological innovation for conservation'
+  }
+];
+
+const experienceLevels = [
+  { id: 'beginner', name: 'Beginner', description: 'New to conservation work' },
+  { id: 'intermediate', name: 'Intermediate', description: '1-5 years experience' },
+  { id: 'advanced', name: 'Advanced', description: '5+ years experience' },
+  { id: 'expert', name: 'Expert', description: 'Leading practitioner in the field' }
+];
+
+const specializations = [
+  'Marine Conservation', 'Forest Ecosystems', 'Wildlife Protection', 'Climate Action',
+  'Biodiversity Research', 'Habitat Restoration', 'Species Recovery', 'Conservation Technology',
+  'Environmental Education', 'Policy & Advocacy', 'Community Engagement', 'Sustainable Development'
+];
+
 export const ArchetypeSelector: React.FC<ArchetypeSelectorProps> = ({ onComplete }) => {
-  const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
-  const [experienceLevel, setExperienceLevel] = useState<string>('intermediate');
+  const [selectedArchetype, setSelectedArchetype] = useState('');
+  const [experienceLevel, setExperienceLevel] = useState('');
+  const [specialization, setSpecialization] = useState('');
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
-  const handleSaveArchetype = async () => {
-    if (!selectedArchetype || !user) return;
+  const handleSubmit = async () => {
+    if (!selectedArchetype || !experienceLevel || !specialization || !user) {
+      toast({
+        title: "Please complete all fields",
+        description: "All fields are required to set up your profile.",
+        variant: "destructive"
+      });
+      return;
+    }
 
     setLoading(true);
+
     try {
-      const archetype = archetypes.find(a => a.id === selectedArchetype);
-      
       const { error } = await supabase
         .from('user_archetypes')
         .insert({
           user_id: user.id,
           archetype_type: selectedArchetype,
           experience_level: experienceLevel,
-          skills: archetype?.skills || [],
-          bio: `${archetype?.description}`,
-          specialization: archetype?.name
+          specialization: specialization
         });
 
       if (error) throw error;
 
-      toast.success('Archetype saved successfully!');
+      toast({
+        title: "Profile created!",
+        description: "Welcome to AEGIS WILDLIFE. Your conservation journey begins now.",
+      });
+
       onComplete();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      console.error('Error creating archetype:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create your profile. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-4">Choose Your Conservation Archetype</h2>
-        <p className="text-muted-foreground">
-          Select the role that best represents your passion and expertise in wildlife conservation
+    <div className="max-w-4xl mx-auto p-6 space-y-8">
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          Choose Your Conservation Archetype
+        </h1>
+        <p className="text-lg text-muted-foreground">
+          Select the role that best represents your conservation interests and expertise
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {archetypes.map((archetype) => (
-          <Card 
-            key={archetype.id}
-            className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
-              selectedArchetype === archetype.id ? 'ring-2 ring-primary border-primary' : ''
-            }`}
-            onClick={() => setSelectedArchetype(archetype.id)}
-          >
-            <CardHeader className="text-center">
-              <div className="text-4xl mb-2">{archetype.emoji}</div>
-              <CardTitle className="text-lg">{archetype.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">{archetype.description}</p>
-              <div className="flex flex-wrap gap-2">
-                {archetype.skills.map((skill) => (
-                  <Badge key={skill} variant="secondary" className="text-xs">
-                    {skill}
+      {/* Archetype Selection */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-semibold">Conservation Archetype</h2>
+        <RadioGroup value={selectedArchetype} onValueChange={setSelectedArchetype}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {archetypes.map((archetype) => (
+              <Card key={archetype.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value={archetype.id} id={archetype.id} />
+                    <Label htmlFor={archetype.id} className="cursor-pointer flex-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-2xl">{archetype.icon}</span>
+                        <CardTitle className="text-sm">{archetype.name}</CardTitle>
+                      </div>
+                    </Label>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <CardDescription className="text-xs mb-2">
+                    {archetype.description}
+                  </CardDescription>
+                  <Badge variant="outline" className="text-xs">
+                    {archetype.focus}
                   </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </RadioGroup>
       </div>
 
-      {selectedArchetype && (
-        <div className="text-center space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Experience Level</label>
-            <select 
-              value={experienceLevel}
-              onChange={(e) => setExperienceLevel(e.target.value)}
-              className="px-4 py-2 border rounded-md"
-            >
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-              <option value="expert">Expert</option>
-            </select>
+      {/* Experience Level */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-semibold">Experience Level</h2>
+        <RadioGroup value={experienceLevel} onValueChange={setExperienceLevel}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {experienceLevels.map((level) => (
+              <Card key={level.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value={level.id} id={level.id} />
+                    <Label htmlFor={level.id} className="cursor-pointer flex-1">
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-sm">{level.name}</h3>
+                        <p className="text-xs text-muted-foreground">{level.description}</p>
+                      </div>
+                    </Label>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-          
-          <Button 
-            onClick={handleSaveArchetype} 
-            disabled={loading}
-            size="lg"
-            className="px-8"
-          >
-            {loading ? 'Saving...' : 'Begin Your Conservation Journey'}
-          </Button>
-        </div>
-      )}
+        </RadioGroup>
+      </div>
+
+      {/* Specialization */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-semibold">Primary Specialization</h2>
+        <Select value={specialization} onValueChange={setSpecialization}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select your primary area of focus" />
+          </SelectTrigger>
+          <SelectContent>
+            {specializations.map((spec) => (
+              <SelectItem key={spec} value={spec}>
+                {spec}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex justify-center pt-6">
+        <Button 
+          onClick={handleSubmit} 
+          disabled={loading || !selectedArchetype || !experienceLevel || !specialization}
+          size="lg"
+          className="px-8"
+        >
+          {loading ? 'Creating Profile...' : 'Complete Setup'}
+        </Button>
+      </div>
     </div>
   );
 };
