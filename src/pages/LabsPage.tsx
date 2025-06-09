@@ -12,7 +12,7 @@ import {
   Brain, 
   Cpu, 
   Database, 
-  Drone, 
+  Plane, 
   Satellite, 
   Users,
   DollarSign,
@@ -134,7 +134,7 @@ const LabsPage: React.FC = () => {
   const researchAreas = [
     { name: 'AI & Machine Learning', icon: Brain, projects: 15, funding: '$8.5M' },
     { name: 'Biotechnology', icon: Beaker, projects: 8, funding: '$5.2M' },
-    { name: 'Drone Technology', icon: Drone, projects: 6, funding: '$3.8M' },
+    { name: 'Drone Technology', icon: Plane, projects: 6, funding: '$3.8M' },
     { name: 'Data Analytics', icon: Database, projects: 12, funding: '$4.1M' },
     { name: 'IoT Sensors', icon: Cpu, projects: 10, funding: '$2.9M' },
     { name: 'Blockchain', icon: Shield, projects: 4, funding: '$1.7M' }
@@ -155,7 +155,7 @@ const LabsPage: React.FC = () => {
       case 'ai_research': return Brain;
       case 'biotech': return Beaker;
       case 'blockchain': return Shield;
-      case 'drone_technology': return Drone;
+      case 'drone_technology': return Plane;
       case 'data_analytics': return Database;
       case 'iot_sensors': return Cpu;
       default: return Lightbulb;
