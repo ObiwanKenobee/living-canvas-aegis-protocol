@@ -1732,6 +1732,53 @@ export type Database = {
         }
         Relationships: []
       }
+      impact_metrics: {
+        Row: {
+          id: string
+          metadata: Json | null
+          metric_type: string
+          project_id: string | null
+          recorded_by: string | null
+          region: string | null
+          timestamp: string
+          unit: string | null
+          value: number
+          verified: boolean | null
+        }
+        Insert: {
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          project_id?: string | null
+          recorded_by?: string | null
+          region?: string | null
+          timestamp?: string
+          unit?: string | null
+          value: number
+          verified?: boolean | null
+        }
+        Update: {
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          project_id?: string | null
+          recorded_by?: string | null
+          region?: string | null
+          timestamp?: string
+          unit?: string | null
+          value?: number
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impact_metrics_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "platform_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       innovation_contributions: {
         Row: {
           content: string | null
@@ -1869,6 +1916,54 @@ export type Database = {
           started_at?: string | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      innovation_labs: {
+        Row: {
+          created_at: string
+          current_funding: number | null
+          description: string | null
+          expected_outcomes: string[] | null
+          funding_goal: number | null
+          id: string
+          lab_type: string | null
+          lead_researcher_id: string | null
+          name: string
+          research_focus: string | null
+          status: string | null
+          technologies: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_funding?: number | null
+          description?: string | null
+          expected_outcomes?: string[] | null
+          funding_goal?: number | null
+          id?: string
+          lab_type?: string | null
+          lead_researcher_id?: string | null
+          name: string
+          research_focus?: string | null
+          status?: string | null
+          technologies?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_funding?: number | null
+          description?: string | null
+          expected_outcomes?: string[] | null
+          funding_goal?: number | null
+          id?: string
+          lab_type?: string | null
+          lead_researcher_id?: string | null
+          name?: string
+          research_focus?: string | null
+          status?: string | null
+          technologies?: string[] | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2097,6 +2192,108 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      learning_pathways: {
+        Row: {
+          archetype_target: string | null
+          certification_available: boolean | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          difficulty_level: string | null
+          estimated_hours: number | null
+          id: string
+          learning_outcomes: string[] | null
+          modules: Json | null
+          prerequisites: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          archetype_target?: string | null
+          certification_available?: boolean | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_hours?: number | null
+          id?: string
+          learning_outcomes?: string[] | null
+          modules?: Json | null
+          prerequisites?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          archetype_target?: string | null
+          certification_available?: boolean | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_hours?: number | null
+          id?: string
+          learning_outcomes?: string[] | null
+          modules?: Json | null
+          prerequisites?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      marketplace_items: {
+        Row: {
+          compatibility: string[] | null
+          created_at: string
+          description: string | null
+          downloads: number | null
+          features: string[] | null
+          id: string
+          item_type: string | null
+          price: number | null
+          price_model: string | null
+          provider_id: string
+          rating: number | null
+          status: string | null
+          technical_specs: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          compatibility?: string[] | null
+          created_at?: string
+          description?: string | null
+          downloads?: number | null
+          features?: string[] | null
+          id?: string
+          item_type?: string | null
+          price?: number | null
+          price_model?: string | null
+          provider_id: string
+          rating?: number | null
+          status?: string | null
+          technical_specs?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          compatibility?: string[] | null
+          created_at?: string
+          description?: string | null
+          downloads?: number | null
+          features?: string[] | null
+          id?: string
+          item_type?: string | null
+          price?: number | null
+          price_model?: string | null
+          provider_id?: string
+          rating?: number | null
+          status?: string | null
+          technical_specs?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       messages: {
         Row: {
@@ -2614,6 +2811,60 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_projects: {
+        Row: {
+          biome_focus: string | null
+          budget_range: string | null
+          created_at: string
+          creator_id: string
+          description: string | null
+          id: string
+          impact_metrics: Json | null
+          project_type: string | null
+          required_skills: string[] | null
+          status: string | null
+          team_size: number | null
+          technologies: string[] | null
+          timeline_months: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          biome_focus?: string | null
+          budget_range?: string | null
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          id?: string
+          impact_metrics?: Json | null
+          project_type?: string | null
+          required_skills?: string[] | null
+          status?: string | null
+          team_size?: number | null
+          technologies?: string[] | null
+          timeline_months?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          biome_focus?: string | null
+          budget_range?: string | null
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          id?: string
+          impact_metrics?: Json | null
+          project_type?: string | null
+          required_skills?: string[] | null
+          status?: string | null
+          team_size?: number | null
+          technologies?: string[] | null
+          timeline_months?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       policies: {
         Row: {
           category: Database["public"]["Enums"]["policy_category"]
@@ -2866,6 +3117,44 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_team_members: {
+        Row: {
+          contribution_type: string | null
+          id: string
+          joined_at: string
+          project_id: string | null
+          role: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          contribution_type?: string | null
+          id?: string
+          joined_at?: string
+          project_id?: string | null
+          role: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          contribution_type?: string | null
+          id?: string
+          joined_at?: string
+          project_id?: string | null
+          role?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_team_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "platform_projects"
             referencedColumns: ["id"]
           },
         ]
@@ -4046,6 +4335,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_archetypes: {
+        Row: {
+          archetype_type: string
+          bio: string | null
+          created_at: string
+          experience_level: string | null
+          id: string
+          interests: string[] | null
+          location: string | null
+          skills: string[] | null
+          specialization: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archetype_type: string
+          bio?: string | null
+          created_at?: string
+          experience_level?: string | null
+          id?: string
+          interests?: string[] | null
+          location?: string | null
+          skills?: string[] | null
+          specialization?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archetype_type?: string
+          bio?: string | null
+          created_at?: string
+          experience_level?: string | null
+          id?: string
+          interests?: string[] | null
+          location?: string | null
+          skills?: string[] | null
+          specialization?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_content_interactions: {
         Row: {
           content_id: string
@@ -4163,6 +4494,47 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      user_progress: {
+        Row: {
+          certificates_earned: string[] | null
+          completed_at: string | null
+          completion_percentage: number | null
+          current_module: number | null
+          id: string
+          pathway_id: string | null
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          certificates_earned?: string[] | null
+          completed_at?: string | null
+          completion_percentage?: number | null
+          current_module?: number | null
+          id?: string
+          pathway_id?: string | null
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          certificates_earned?: string[] | null
+          completed_at?: string | null
+          completion_percentage?: number | null
+          current_module?: number | null
+          id?: string
+          pathway_id?: string | null
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_pathway_id_fkey"
+            columns: ["pathway_id"]
+            isOneToOne: false
+            referencedRelation: "learning_pathways"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_rewards: {
         Row: {
