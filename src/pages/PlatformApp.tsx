@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from '@/components/auth/AuthProvider';
 import { Navigation } from '@/components/layout/Navigation';
 import { ArchetypeSelector } from '@/components/archetype/ArchetypeSelector';
 import { Dashboard } from '@/components/dashboard/Dashboard';
+import { ProfileManagement } from '@/components/profile/ProfileManagement';
+import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import ProjectsPage from './ProjectsPage';
 import LearningPage from './LearningPage';
 import LabsPage from './LabsPage';

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -306,7 +305,10 @@ export const ProfileManagement: React.FC = () => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Profile Visibility</Label>
-                  <Select value={privacy.profileVisibility}>
+                  <Select 
+                    value={privacy.profileVisibility}
+                    onValueChange={(value) => setPrivacy(prev => ({ ...prev, profileVisibility: value }))}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -326,7 +328,7 @@ export const ProfileManagement: React.FC = () => {
                       </h4>
                     </div>
                     <Switch
-                      checked={value}
+                      checked={Boolean(value)}
                       onCheckedChange={(checked) => 
                         setPrivacy(prev => ({ ...prev, [key]: checked }))
                       }
