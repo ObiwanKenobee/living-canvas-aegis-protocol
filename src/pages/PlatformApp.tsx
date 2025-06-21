@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from '@/components/auth/AuthProvider';
 import { Navigation } from '@/components/layout/Navigation';
@@ -134,8 +133,13 @@ const PlatformContent: React.FC = () => {
       case 'profile':
         return (
           <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-6">Profile Settings</h1>
-            <p className="text-muted-foreground">Profile management coming soon...</p>
+            <ProfileManagement />
+          </div>
+        );
+      case 'admin':
+        return (
+          <div className="container mx-auto px-4 py-8">
+            <AdminDashboard />
           </div>
         );
       default:

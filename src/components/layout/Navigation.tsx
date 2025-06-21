@@ -108,6 +108,10 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
                           <Settings className="mr-2 h-4 w-4" />
                           <span>Profile</span>
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleNavigation('admin')}>
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Admin</span>
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={handleSignOut}>
                           <LogOut className="mr-2 h-4 w-4" />
                           <span>Sign Out</span>
@@ -163,6 +167,14 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
                             >
                               <Settings size={18} />
                               <span>Profile</span>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleNavigation('admin')}
+                              className="w-full justify-start space-x-3"
+                            >
+                              <Settings size={18} />
+                              <span>Admin</span>
                             </Button>
                             <Button
                               variant="ghost"
