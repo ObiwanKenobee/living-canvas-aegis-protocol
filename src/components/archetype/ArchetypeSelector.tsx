@@ -67,10 +67,19 @@ const experienceLevels = [
 ];
 
 const specializations = [
-  'Marine Conservation', 'Forest Ecosystems', 'Wildlife Protection', 'Climate Action',
-  'Biodiversity Research', 'Habitat Restoration', 'Species Recovery', 'Conservation Technology',
-  'Environmental Education', 'Policy & Advocacy', 'Community Engagement', 'Sustainable Development'
-];
+  'Marine Conservation', 
+  'Forest Ecosystems', 
+  'Wildlife Protection', 
+  'Climate Action',
+  'Biodiversity Research', 
+  'Habitat Restoration', 
+  'Species Recovery', 
+  'Conservation Technology',
+  'Environmental Education', 
+  'Policy & Advocacy', 
+  'Community Engagement', 
+  'Sustainable Development'
+].filter(spec => spec.trim() !== ''); // Filter out any empty strings
 
 export const ArchetypeSelector: React.FC<ArchetypeSelectorProps> = ({ onComplete }) => {
   const [selectedArchetype, setSelectedArchetype] = useState('');
